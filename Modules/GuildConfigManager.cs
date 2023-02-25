@@ -72,6 +72,8 @@ namespace FrenBot.Modules
                 guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
                 await readStream.DisposeAsync();
 
+                if (guildConfigs == null) throw new  Exception("Failed to deserialize guildConfigs.json");
+
                 if (guildConfigs.ContainsKey(guildID))
                 {
                     guildConfigs[guildID] = guildConfig;
@@ -104,20 +106,15 @@ namespace FrenBot.Modules
                 using FileStream openStream = File.OpenRead(fileName);
                 guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
                 await openStream.DisposeAsync();
-                GuildConfig guildConfig;
-                if (guildConfigs.TryGetValue(guildID, out guildConfig))
+                if (guildConfigs == null) throw new Exception("Failed to deserialize guildConfigs.json");
+
+                if (guildConfigs.TryGetValue(guildID, out GuildConfig guildConfig))
                 {
                     return guildConfig;
                 }
-                else
-                {
-                    throw new Exception("guildconfig not found");
-                }
+                else throw new Exception("guildconfig not found");
             }
-            else
-            {
-                throw new Exception("guildConfig.json not found");
-            }
+            else throw new Exception("guildConfig.json not found");
         }
     }
 }
