@@ -23,8 +23,17 @@ namespace FrenBot
             IHost host = Host.CreateDefaultBuilder()
                 .ConfigureServices((_, services) => services
                 .AddSingleton(config)
-                .AddSingleton(x => new DiscordSocketClient(new DiscordSocketConfig() { GatewayIntents = GatewayIntents.All }))
-                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
+                .AddSingleton(x => new DiscordSocketClient(new DiscordSocketConfig() 
+                {
+                    LogLevel = LogSeverity.Verbose,
+                    MessageCacheSize = 1024,
+                    GatewayIntents = GatewayIntents.All 
+                }))
+                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>(), new InteractionServiceConfig
+                {
+                    LogLevel = LogSeverity.Verbose,
+                    DefaultRunMode = RunMode.Async
+                }))
                 .AddSingleton<InteractionHandler>()
                 .AddSingleton<StartupService>()
                 .AddSingleton<LoggingService>()
