@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 using Discord.Interactions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FrenBot.Modules;

@@ -1,11 +1,8 @@
 ﻿using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace FrenBot.Modules
 {
@@ -29,18 +26,20 @@ namespace FrenBot.Modules
 
         private async Task OnJoinedGuildAsync(SocketGuild guild)
         {
+            Console.WriteLine($"{DateTime.Now}: bot has joined {guild.Name}");
+
             var config = _services.GetRequiredService<IConfigurationRoot>().GetSection("moduleConfig").GetSection("voicechatNotifier");
-            string channelName = config["channelName"];
-            string roleName = config["roleName"];
+            var channelName = config["channelName"];
+            var roleName = config["roleName"];
 
             var channel = await guild.CreateTextChannelAsync(channelName);
-            Console.WriteLine($"created channel {channel.Id}");
+            Console.WriteLine($"{DateTime.Now}: created channel {channel.Id} in {guild.Name}");
 
             var role = await guild.CreateRoleAsync(roleName);
-            Console.WriteLine($"created role {role.Id}");
+            Console.WriteLine($"{DateTime.Now}: created role {role.Id} in {guild.Name}");
 
-            await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
             await channel.AddPermissionOverwriteAsync(role, OverwritePermissions.InheritAll);
+            await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
 
             GuildConfig guildConfig = new()
             {
@@ -60,81 +59,64 @@ namespace FrenBot.Modules
 
             if (channel != null) await channel.DeleteAsync();
             if (role != null) await role.DeleteAsync();
-
-
         }
 
         public static async Task WriteGuildConfigAsync(ulong guildID, GuildConfig guildConfig)
         {
-            /*
-            string fileName = guildID.ToString() + ".json";
-
-            using FileStream fileStream = File.Create(fileName);
-            await JsonSerializer.SerializeAsync(fileStream, guildConfig);
-            await fileStream.DisposeAsync();
-
-            Console.WriteLine($"Added file: {fileName} {Environment.NewLine} {File.ReadAllText(fileName)}");
-            */
-            Dictionary<ulong, GuildConfig> guildConfigs;
-
             string fileName = "guildConfigs.json";
+
+            Dictionary<ulong, GuildConfig> _guildConfigs;
             if (File.Exists(fileName))
             {
-                using FileStream openStream = File.Open("guildConfigs", FileMode.Open);
-                guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
-                guildConfigs.Add(guildID, guildConfig);
+                FileStream readStream = File.OpenRead(fileName);
+                var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
+                await readStream.DisposeAsync();
+
+                if (guildConfigs == null) throw new  Exception("Failed to deserialize guildConfigs.json");
+
+                if (guildConfigs.ContainsKey(guildID))
+                {
+                    guildConfigs[guildID] = guildConfig;
+                    Console.WriteLine($"{DateTime.Now}: Updated config entry;");
+                }
+                else
+                {
+                    guildConfigs.Add(guildID, guildConfig);
+                    Console.WriteLine($"{DateTime.Now}: Added guildConfig {guildID};");
+                }
+                _guildConfigs = guildConfigs;
             }
             else 
             {
-                guildConfigs = new Dictionary<ulong, GuildConfig>
+                var guildConfigs = new Dictionary<ulong, GuildConfig>
                 {
                     { guildID, guildConfig }
                 };
-
-                using FileStream createStream = File.Open("guildConfigs", FileMode.Create);
-                await JsonSerializer.SerializeAsync(createStream, guildConfigs);
-                await createStream.DisposeAsync();
+                _guildConfigs = guildConfigs;
             }
 
+            FileStream createStream = File.Open(fileName, FileMode.Create);
+            await JsonSerializer.SerializeAsync(createStream, _guildConfigs);
+            await createStream.DisposeAsync();
         }
 
         public static async Task<GuildConfig> ReadGuildConfigAsync(ulong guildID)
         {
-            /*
-            using FileStream openStream = File.OpenRead(guildID.ToString() + ".json");
-            GuildConfig? guildConfig = await JsonSerializer.DeserializeAsync<GuildConfig>(openStream);
-            await openStream.DisposeAsync();
-
-            if (guildConfig != null)
-            {
-                return guildConfig;
-            }
-            else
-            {
-                throw new Exception("guildInfo not found");
-            }
-            */
-            Dictionary<ulong, GuildConfig> guildConfigs;
-
             string fileName = "guildConfigs.json";
             if (File.Exists(fileName))
             {
-                using FileStream openStream = File.Open("guildConfigs", FileMode.Open);
-                guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
-                GuildConfig guildConfig;
-                if (guildConfigs.TryGetValue(guildID, out guildConfig))
+                FileStream openStream = File.OpenRead(fileName);
+                var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
+                await openStream.DisposeAsync();
+                if (guildConfigs == null) throw new Exception("Failed to deserialize guildConfigs.json");
+
+                if (guildConfigs.ContainsKey(guildID))
                 {
-                    return guildConfig;
+                    return guildConfigs[guildID];
                 }
-                else
-                {
-                    throw new Exception("guildconfig not found");
-                }
+                else throw new Exception($"guildconfig {guildID} not found");
             }
-            else
-            {
-                throw new Exception("guildConfig.json not found");
-            }
+            else throw new Exception("guildConfig.json not found");
         }
     }
 }

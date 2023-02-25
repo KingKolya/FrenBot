@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Discord.WebSocket;
 
 namespace FrenBot.Modules
 {
@@ -26,8 +24,7 @@ namespace FrenBot.Modules
         {
 
             if (oldState.VoiceChannel != newState.VoiceChannel)
-            {
-               
+            {        
                 var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
                 var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
 
@@ -40,21 +37,21 @@ namespace FrenBot.Modules
                     GuildConfig? guildConfig = await JsonSerializer.DeserializeAsync<GuildConfig>(openStream);
                     await openStream.DisposeAsync();
 
-                    Console.WriteLine($"{user.Username} has joined {vcName} in {guild.Name}");
+                    Console.WriteLine($"{DateTime.Now}: {user.Username} has joined {vcName} in {guild.Name}");
 
                     if (guildConfig == null || !guildConfig.NotifyEnabled) return;
 
                     var notifyChannel = guild.GetTextChannel(guildConfig.NotifyChannelID);
                     if (notifyChannel == null)
                     {
-                        Console.WriteLine($"{guild.Id}: notification channel not found");
+                        Console.WriteLine($"{DateTime.Now}: notification channel not found in {guild.Name}");
                         return;
                     }
 
                     var notifyRole = guild.GetRole(guildConfig.NotifyRoleID);
                     if (notifyRole == null)
                     {
-                        Console.WriteLine($"{guild.Id}: notification role not found");
+                        Console.WriteLine($"{DateTime.Now}: notification role not found in {guild.Name}");
                         return;
                     }
 
