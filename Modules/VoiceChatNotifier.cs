@@ -26,8 +26,7 @@ namespace FrenBot.Modules
         {
 
             if (oldState.VoiceChannel != newState.VoiceChannel)
-            {
-               
+            {        
                 var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
                 var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
 

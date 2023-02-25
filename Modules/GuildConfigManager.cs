@@ -80,9 +80,18 @@ namespace FrenBot.Modules
             string fileName = "guildConfigs.json";
             if (File.Exists(fileName))
             {
-                using FileStream openStream = File.Open("guildConfigs", FileMode.Open);
-                guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
-                guildConfigs.Add(guildID, guildConfig);
+                using FileStream readStream = File.OpenRead(fileName);
+                guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
+                await readStream.DisposeAsync();
+
+                if (guildConfigs.ContainsKey(guildID))
+                {
+                    guildConfigs[guildID] = guildConfig;
+                }
+                else
+                {
+                    guildConfigs.Add(guildID, guildConfig);
+                }
             }
             else 
             {
@@ -90,12 +99,11 @@ namespace FrenBot.Modules
                 {
                     { guildID, guildConfig }
                 };
-
-                using FileStream createStream = File.Open("guildConfigs", FileMode.Create);
-                await JsonSerializer.SerializeAsync(createStream, guildConfigs);
-                await createStream.DisposeAsync();
             }
 
+            using FileStream createStream = File.Open(fileName, FileMode.Create);
+            await JsonSerializer.SerializeAsync(createStream, guildConfigs);
+            await createStream.DisposeAsync();
         }
 
         public static async Task<GuildConfig> ReadGuildConfigAsync(ulong guildID)
@@ -119,8 +127,9 @@ namespace FrenBot.Modules
             string fileName = "guildConfigs.json";
             if (File.Exists(fileName))
             {
-                using FileStream openStream = File.Open("guildConfigs", FileMode.Open);
+                using FileStream openStream = File.OpenRead(fileName);
                 guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
+                await openStream.DisposeAsync();
                 GuildConfig guildConfig;
                 if (guildConfigs.TryGetValue(guildID, out guildConfig))
                 {
