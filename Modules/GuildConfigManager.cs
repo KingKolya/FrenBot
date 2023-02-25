@@ -36,8 +36,8 @@ namespace FrenBot.Modules
             var role = await guild.CreateRoleAsync(roleName);
             Console.WriteLine($"created role {role.Id}");
 
-            await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
             await channel.AddPermissionOverwriteAsync(role, OverwritePermissions.InheritAll);
+            await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
 
             GuildConfig guildConfig = new()
             {
