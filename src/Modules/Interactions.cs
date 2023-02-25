@@ -11,7 +11,6 @@ namespace FrenBot.Modules
         public async Task HandlePingCommandAsync()
         {
             var latency = Context.Client.Latency;
-            Console.WriteLine($"{DateTime.Now}: {Context.User.Username} pinged the bot with {latency}ms of latency in {Context.Guild.Name}");
             await ReplyAsync($"Pong! {latency}ms");
         }
 
@@ -38,7 +37,6 @@ namespace FrenBot.Modules
             {
                 await user.AddRoleAsync(role);
                 await RespondAsync("you will now receive notifications when users join a voice channel.", ephemeral: true);
-                Console.WriteLine($"{DateTime.Now}: {user.Username} has subscribed to notifications in {Context.Guild.Name}");
             }
         }
 
@@ -61,7 +59,6 @@ namespace FrenBot.Modules
             {
                 await RespondAsync("you will no longer receive notifications when users join a voice channel.", ephemeral: true);
                 await user.RemoveRoleAsync(role);
-                Console.WriteLine($"{DateTime.Now}: {user.Username} has unsubscribed from notifications in {Context.Guild.Name}");
             }
             else
             {               
@@ -85,7 +82,6 @@ namespace FrenBot.Modules
 
                 await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
                 await RespondAsync("Notifications are now enabled.");
-                Console.WriteLine($"{DateTime.Now}: {Context.User.Username} has enabled notifications in {Context.Guild.Name}");
             }
 
         }
@@ -102,7 +98,6 @@ namespace FrenBot.Modules
 
                 await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
                 await RespondAsync("Notifications are now disabled.");
-                Console.WriteLine($"{DateTime.Now}: {Context.User.Username} has disabled notifications in {Context.Guild.Name}");
             }
             else
             {
@@ -121,7 +116,6 @@ namespace FrenBot.Modules
 
             await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
             await RespondAsync($"{role.Name} will be notified");
-            Console.WriteLine($"{DateTime.Now}: {Context.User.Username} has set notification role to {role.Name} in {Context.Guild.Name}");
         }
 
         [DefaultMemberPermissions(GuildPermission.Administrator)]
@@ -135,7 +129,6 @@ namespace FrenBot.Modules
 
             await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
             await RespondAsync($"notifications will be sent to {channel.Name}");
-            Console.WriteLine($"{DateTime.Now}: {Context.User.Username} has set notification channel to {channel.Name} in {Context.Guild.Name}");
         }
 
         bool HasRole(ulong roleID)

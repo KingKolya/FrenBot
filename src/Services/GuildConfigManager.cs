@@ -27,17 +27,12 @@ namespace FrenBot.Services
 
         private async Task OnJoinedGuildAsync(SocketGuild guild)
         {
-            Console.WriteLine($"{DateTime.Now}: bot has joined {guild.Name}");
-
             var config = _services.GetRequiredService<IConfigurationRoot>().GetSection("moduleConfig").GetSection("voicechatNotifier");
             var channelName = config["channelName"];
             var roleName = config["roleName"];
 
             var channel = await guild.CreateTextChannelAsync(channelName);
-            Console.WriteLine($"{DateTime.Now}: created channel {channel.Id} in {guild.Name}");
-
             var role = await guild.CreateRoleAsync(roleName);
-            Console.WriteLine($"{DateTime.Now}: created role {role.Id} in {guild.Name}");
 
             await channel.AddPermissionOverwriteAsync(role, OverwritePermissions.InheritAll);
             await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
@@ -78,12 +73,12 @@ namespace FrenBot.Services
                 if (guildConfigs.ContainsKey(guildID))
                 {
                     guildConfigs[guildID] = guildConfig;
-                    Console.WriteLine($"{DateTime.Now}: Updated guildConfig {guildID};");
+                    Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss}: Updated guildConfig {guildID};");
                 }
                 else
                 {
                     guildConfigs.Add(guildID, guildConfig);
-                    Console.WriteLine($"{DateTime.Now}: Added guildConfig {guildID};");
+                    Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss}: Added guildConfig {guildID};");
                 }
                 _guildConfigs = guildConfigs;
             }
