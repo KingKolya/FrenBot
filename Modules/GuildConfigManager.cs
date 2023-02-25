@@ -26,18 +26,20 @@ namespace FrenBot.Modules
 
         private async Task OnJoinedGuildAsync(SocketGuild guild)
         {
+            Console.WriteLine($"{DateTime.Now}: bot has joined {guild.Name}");
+
             var config = _services.GetRequiredService<IConfigurationRoot>().GetSection("moduleConfig").GetSection("voicechatNotifier");
             var channelName = config["channelName"];
             var roleName = config["roleName"];
 
             var channel = await guild.CreateTextChannelAsync(channelName);
-            Console.WriteLine($"created channel {channel.Id}");
+            Console.WriteLine($"{DateTime.Now}: created channel {channel.Id} in {guild.Name}");
 
             var role = await guild.CreateRoleAsync(roleName);
-            Console.WriteLine($"created role {role.Id}");
+            Console.WriteLine($"{DateTime.Now}: created role {role.Id} in {guild.Name}");
 
-            await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
             await channel.AddPermissionOverwriteAsync(role, OverwritePermissions.InheritAll);
+            await channel.AddPermissionOverwriteAsync(guild.EveryoneRole, OverwritePermissions.DenyAll(channel));
 
             GuildConfig guildConfig = new()
             {
@@ -66,7 +68,7 @@ namespace FrenBot.Modules
             Dictionary<ulong, GuildConfig> _guildConfigs;
             if (File.Exists(fileName))
             {
-                using FileStream readStream = File.OpenRead(fileName);
+                FileStream readStream = File.OpenRead(fileName);
                 var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
                 await readStream.DisposeAsync();
 
@@ -75,10 +77,12 @@ namespace FrenBot.Modules
                 if (guildConfigs.ContainsKey(guildID))
                 {
                     guildConfigs[guildID] = guildConfig;
+                    Console.WriteLine($"{DateTime.Now}: Updated config entry;");
                 }
                 else
                 {
                     guildConfigs.Add(guildID, guildConfig);
+                    Console.WriteLine($"{DateTime.Now}: Added guildConfig {guildID};");
                 }
                 _guildConfigs = guildConfigs;
             }
@@ -91,7 +95,7 @@ namespace FrenBot.Modules
                 _guildConfigs = guildConfigs;
             }
 
-            using FileStream createStream = File.Open(fileName, FileMode.Create);
+            FileStream createStream = File.Open(fileName, FileMode.Create);
             await JsonSerializer.SerializeAsync(createStream, _guildConfigs);
             await createStream.DisposeAsync();
         }
@@ -101,7 +105,7 @@ namespace FrenBot.Modules
             string fileName = "guildConfigs.json";
             if (File.Exists(fileName))
             {
-                using FileStream openStream = File.OpenRead(fileName);
+                FileStream openStream = File.OpenRead(fileName);
                 var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
                 await openStream.DisposeAsync();
                 if (guildConfigs == null) throw new Exception("Failed to deserialize guildConfigs.json");
@@ -110,7 +114,7 @@ namespace FrenBot.Modules
                 {
                     return guildConfigs[guildID];
                 }
-                else throw new Exception($"{guildID}: guildconfig not found");
+                else throw new Exception($"guildconfig {guildID} not found");
             }
             else throw new Exception("guildConfig.json not found");
         }
