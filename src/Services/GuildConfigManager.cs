@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FrenBot.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
