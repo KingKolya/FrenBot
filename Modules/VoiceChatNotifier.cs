@@ -35,21 +35,21 @@ namespace FrenBot.Modules
 
                     GuildConfig guildConfig = await GuildConfigManager.ReadGuildConfigAsync(guild.Id);
 
-                    Console.WriteLine($"{guild.Id}: {user.Username} has joined {vcName} in {guild.Name}");
+                    Console.WriteLine($"{DateTime.Now}: {user.Username} has joined {vcName} in {guild.Name}");
 
                     if (guildConfig == null || !guildConfig.NotifyEnabled) return;
 
                     var notifyChannel = guild.GetTextChannel(guildConfig.NotifyChannelID);
                     if (notifyChannel == null)
                     {
-                        Console.WriteLine($"{guild.Id}: notification channel not found in {guild.Name}");
+                        Console.WriteLine($"{DateTime.Now}: notification channel not found in {guild.Name}");
                         return;
                     }
 
                     var notifyRole = guild.GetRole(guildConfig.NotifyRoleID);
                     if (notifyRole == null)
                     {
-                        Console.WriteLine($"{guild.Id}: notification role not found in {guild.Name}");
+                        Console.WriteLine($"{DateTime.Now}: notification role not found in {guild.Name}");
                         return;
                     }
 
