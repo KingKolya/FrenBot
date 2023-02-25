@@ -27,8 +27,8 @@ namespace FrenBot.Modules
         private async Task OnJoinedGuildAsync(SocketGuild guild)
         {
             var config = _services.GetRequiredService<IConfigurationRoot>().GetSection("moduleConfig").GetSection("voicechatNotifier");
-            string channelName = config["channelName"];
-            string roleName = config["roleName"];
+            var channelName = config["channelName"];
+            var roleName = config["roleName"];
 
             var channel = await guild.CreateTextChannelAsync(channelName);
             Console.WriteLine($"created channel {channel.Id}");
@@ -57,19 +57,17 @@ namespace FrenBot.Modules
 
             if (channel != null) await channel.DeleteAsync();
             if (role != null) await role.DeleteAsync();
-
-
         }
 
         public static async Task WriteGuildConfigAsync(ulong guildID, GuildConfig guildConfig)
         {
-            Dictionary<ulong, GuildConfig> guildConfigs;
-
             string fileName = "guildConfigs.json";
+
+            Dictionary<ulong, GuildConfig> _guildConfigs;
             if (File.Exists(fileName))
             {
                 using FileStream readStream = File.OpenRead(fileName);
-                guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
+                var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
                 await readStream.DisposeAsync();
 
                 if (guildConfigs == null) throw new  Exception("Failed to deserialize guildConfigs.json");
@@ -82,37 +80,37 @@ namespace FrenBot.Modules
                 {
                     guildConfigs.Add(guildID, guildConfig);
                 }
+                _guildConfigs = guildConfigs;
             }
             else 
             {
-                guildConfigs = new Dictionary<ulong, GuildConfig>
+                var guildConfigs = new Dictionary<ulong, GuildConfig>
                 {
                     { guildID, guildConfig }
                 };
+                _guildConfigs = guildConfigs;
             }
 
             using FileStream createStream = File.Open(fileName, FileMode.Create);
-            await JsonSerializer.SerializeAsync(createStream, guildConfigs);
+            await JsonSerializer.SerializeAsync(createStream, _guildConfigs);
             await createStream.DisposeAsync();
         }
 
         public static async Task<GuildConfig> ReadGuildConfigAsync(ulong guildID)
         {
-            Dictionary<ulong, GuildConfig> guildConfigs;
-
             string fileName = "guildConfigs.json";
             if (File.Exists(fileName))
             {
                 using FileStream openStream = File.OpenRead(fileName);
-                guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
+                var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(openStream);
                 await openStream.DisposeAsync();
                 if (guildConfigs == null) throw new Exception("Failed to deserialize guildConfigs.json");
 
-                if (guildConfigs.TryGetValue(guildID, out GuildConfig guildConfig))
+                if (guildConfigs.ContainsKey(guildID))
                 {
-                    return guildConfig;
+                    return guildConfigs[guildID];
                 }
-                else throw new Exception("guildconfig not found");
+                else throw new Exception($"{guildID}: guildconfig not found");
             }
             else throw new Exception("guildConfig.json not found");
         }
