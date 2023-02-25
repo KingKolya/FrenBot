@@ -1,10 +1,11 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using FrenBot.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 
-namespace FrenBot.Modules
+namespace FrenBot.Services
 {
     public class GuildConfigManager
     {
@@ -44,7 +45,7 @@ namespace FrenBot.Modules
             GuildConfig guildConfig = new()
             {
                 NotifyChannelID = channel.Id,
-                NotifyRoleID = role.Id 
+                NotifyRoleID = role.Id
             };
 
             await WriteGuildConfigAsync(guild.Id, guildConfig);
@@ -72,7 +73,7 @@ namespace FrenBot.Modules
                 var guildConfigs = await JsonSerializer.DeserializeAsync<Dictionary<ulong, GuildConfig>>(readStream);
                 await readStream.DisposeAsync();
 
-                if (guildConfigs == null) throw new  Exception("Failed to deserialize guildConfigs.json");
+                if (guildConfigs == null) throw new Exception("Failed to deserialize guildConfigs.json");
 
                 if (guildConfigs.ContainsKey(guildID))
                 {
@@ -86,7 +87,7 @@ namespace FrenBot.Modules
                 }
                 _guildConfigs = guildConfigs;
             }
-            else 
+            else
             {
                 var guildConfigs = new Dictionary<ulong, GuildConfig>
                 {

@@ -2,7 +2,7 @@
 using Discord.Interactions;
 using System.Reflection;
 
-namespace FrenBot.Modules
+namespace FrenBot.Services
 {
     public class InteractionHandler
     {

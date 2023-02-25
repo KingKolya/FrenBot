@@ -1,12 +1,12 @@
 ﻿using Discord.WebSocket;
 
-namespace FrenBot.Modules
+namespace FrenBot.Services
 {
     public class VoiceChatNotifier
     {
         private readonly DiscordSocketClient _client;
 
-        public VoiceChatNotifier (DiscordSocketClient client)
+        public VoiceChatNotifier(DiscordSocketClient client)
         {
             _client = client;
         }
@@ -24,7 +24,7 @@ namespace FrenBot.Modules
         {
 
             if (oldState.VoiceChannel != newState.VoiceChannel)
-            {        
+            {
                 var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
                 var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
 

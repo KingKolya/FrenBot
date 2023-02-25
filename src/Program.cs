@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FrenBot.Modules;
+using FrenBot.Services;
 
 namespace FrenBot
 {

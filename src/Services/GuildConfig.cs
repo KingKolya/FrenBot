@@ -1,4 +1,4 @@
-﻿namespace FrenBot.Modules
+﻿namespace FrenBot.Services
 {
     public class GuildConfig
     {
