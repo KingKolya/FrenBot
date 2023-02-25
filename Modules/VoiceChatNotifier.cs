@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Discord.WebSocket;
 
 namespace FrenBot.Modules
 {

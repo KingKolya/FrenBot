@@ -1,11 +1,8 @@
 ﻿using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace FrenBot.Modules
 {
@@ -66,15 +63,6 @@ namespace FrenBot.Modules
 
         public static async Task WriteGuildConfigAsync(ulong guildID, GuildConfig guildConfig)
         {
-            /*
-            string fileName = guildID.ToString() + ".json";
-
-            using FileStream fileStream = File.Create(fileName);
-            await JsonSerializer.SerializeAsync(fileStream, guildConfig);
-            await fileStream.DisposeAsync();
-
-            Console.WriteLine($"Added file: {fileName} {Environment.NewLine} {File.ReadAllText(fileName)}");
-            */
             Dictionary<ulong, GuildConfig> guildConfigs;
 
             string fileName = "guildConfigs.json";
@@ -108,20 +96,6 @@ namespace FrenBot.Modules
 
         public static async Task<GuildConfig> ReadGuildConfigAsync(ulong guildID)
         {
-            /*
-            using FileStream openStream = File.OpenRead(guildID.ToString() + ".json");
-            GuildConfig? guildConfig = await JsonSerializer.DeserializeAsync<GuildConfig>(openStream);
-            await openStream.DisposeAsync();
-
-            if (guildConfig != null)
-            {
-                return guildConfig;
-            }
-            else
-            {
-                throw new Exception("guildInfo not found");
-            }
-            */
             Dictionary<ulong, GuildConfig> guildConfigs;
 
             string fileName = "guildConfigs.json";
