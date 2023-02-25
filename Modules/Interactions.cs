@@ -6,15 +6,14 @@ using System.Text.Json;
 namespace FrenBot.Modules
 {
     public class Interactions : InteractionModuleBase<SocketInteractionContext>
-    {
-
+    { 
         [SlashCommand("subscribe", "receive notification when users join a voice channel")]
         public async Task HandleSubscribeCommandAsync()
         {
             var user = Context.User as IGuildUser;
             if (user == null) return;
 
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await ReadGuildInfoAsync();
 
             var role = Context.Guild.GetRole(guildConfig.NotifyRoleID);
             if (role == null)
@@ -41,7 +40,7 @@ namespace FrenBot.Modules
             var user = Context.User as IGuildUser;
             if (user == null) return;
 
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await ReadGuildInfoAsync();
 
             var role = Context.Guild.GetRole(guildConfig.NotifyRoleID);
             if (role == null)
@@ -65,7 +64,7 @@ namespace FrenBot.Modules
         [SlashCommand("enable", "Enable notifications")]
         public async Task HandleEnableCommandAsync()
         {
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await ReadGuildInfoAsync();
 
             if (guildConfig.NotifyEnabled)
             {
@@ -75,7 +74,7 @@ namespace FrenBot.Modules
             {
                 guildConfig.NotifyEnabled = true;
 
-                await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+                await WriteGuildInfoAsync(guildConfig);
                 await RespondAsync("Notifications are now enabled.");
             }
 
@@ -84,13 +83,13 @@ namespace FrenBot.Modules
         [SlashCommand("disable", "Disable notifications")]
         public async Task HandleDisableCommandAsync()
         {
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await ReadGuildInfoAsync();
 
             if (guildConfig.NotifyEnabled)
             {
                 guildConfig.NotifyEnabled = false;
 
-                await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+                await WriteGuildInfoAsync(guildConfig);
                 await RespondAsync("Notifications are now disabled.");
             }
             else
@@ -111,8 +110,34 @@ namespace FrenBot.Modules
                 NotifyRoleID = roleID
             };
 
-            await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+            await WriteGuildInfoAsync(guildConfig);
             await RespondAsync("channel and role have been update");
+        }
+
+        async Task WriteGuildInfoAsync(GuildConfig guildConfig)
+        {
+            string fileName = Context.Guild.Id.ToString() + ".json";
+
+            using FileStream fileStream = File.Create(fileName);
+            await JsonSerializer.SerializeAsync(fileStream, guildConfig);
+            await fileStream.DisposeAsync();
+
+            Console.WriteLine($"Updated file: {fileName} {Environment.NewLine} {File.ReadAllText(fileName)}");
+        }
+        async Task<GuildConfig> ReadGuildInfoAsync()
+        {
+            using FileStream openStream = File.OpenRead(Context.Guild.Id.ToString() + ".json");
+            GuildConfig? guildInfo = await JsonSerializer.DeserializeAsync<GuildConfig>(openStream);
+            await openStream.DisposeAsync();
+
+            if (guildInfo != null)
+            {
+                return guildInfo;
+            }
+            else
+            {
+                throw new Exception("guildInfo not found");
+            }
         }
 
         bool HasRole(ulong roleID)

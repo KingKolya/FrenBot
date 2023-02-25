@@ -36,7 +36,9 @@ namespace FrenBot.Modules
                     var guild = newState.VoiceChannel.Guild;
                     var vcName = newState.VoiceChannel.Name;
 
-                    GuildConfig guildConfig = await GuildConfigManager.ReadGuildConfigAsync(guild.Id);
+                    using FileStream openStream = File.OpenRead(guild.Id.ToString() + ".json");
+                    GuildConfig? guildConfig = await JsonSerializer.DeserializeAsync<GuildConfig>(openStream);
+                    await openStream.DisposeAsync();
 
                     Console.WriteLine($"{user.Username} has joined {vcName} in {guild.Name}");
 
