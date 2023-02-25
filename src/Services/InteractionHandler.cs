@@ -7,19 +7,19 @@ namespace FrenBot.Services
     public class InteractionHandler
     {
         private readonly DiscordSocketClient _client;
-        private readonly InteractionService _commands;
+        private readonly InteractionService _interactions;
         private readonly IServiceProvider _services;
 
-        public InteractionHandler(DiscordSocketClient client, InteractionService commands, IServiceProvider services)
+        public InteractionHandler(DiscordSocketClient client, InteractionService interactions, IServiceProvider services)
         {
             _client = client;
-            _commands = commands;
+            _interactions = interactions;
             _services = services;
         }
 
         public async Task InitializeAsync()
         {
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+            await _interactions.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
             _client.InteractionCreated += HandleInteraction;
         }
@@ -29,7 +29,7 @@ namespace FrenBot.Services
             try
             {
                 var context = new SocketInteractionContext(_client, arg);
-                await _commands.ExecuteCommandAsync(context, _services);
+                await _interactions.ExecuteCommandAsync(context, _services);
             }
             catch (Exception ex)
             {
