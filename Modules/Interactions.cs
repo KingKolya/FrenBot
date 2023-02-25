@@ -61,6 +61,7 @@ namespace FrenBot.Modules
             }
         }
 
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
         [SlashCommand("enable", "Enable notifications")]
         public async Task HandleEnableCommandAsync()
         {
@@ -80,6 +81,7 @@ namespace FrenBot.Modules
 
         }
 
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
         [SlashCommand("disable", "Disable notifications")]
         public async Task HandleDisableCommandAsync()
         {
@@ -98,20 +100,30 @@ namespace FrenBot.Modules
             }
         }
 
-        [SlashCommand("update", "update guild config")]
-        public async Task HandleUpdateCommandAsync(string channel, string role)
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        [SlashCommand("setrole", "Set which role will be notified")]
+        public async Task HandleSetRoleCommandAsync(IRole role)
         {
-            ulong channelID = ulong.Parse(channel);
-            ulong roleID = ulong.Parse(role);
+            ulong roleID = role.Id;
 
-            GuildConfig guildConfig = new()
-            {
-                NotifyChannelID = channelID,
-                NotifyRoleID = roleID
-            };
+            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            guildConfig.NotifyRoleID = roleID;
 
             await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
-            await RespondAsync("channel and role have been update");
+            await RespondAsync($"{role.Name} will be notified");
+        }
+
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        [SlashCommand("setchannel", "Set where notifications will be sent")]
+        public async Task HandleSetChannelCommandAsync(IChannel channel)
+        {
+            ulong channelID = channel.Id;
+
+            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            guildConfig.NotifyChannelID = channelID;
+
+            await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+            await RespondAsync($"notifications will be sent to {channel.Name}");
         }
 
         bool HasRole(ulong roleID)
