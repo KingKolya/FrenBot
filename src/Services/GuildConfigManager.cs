@@ -16,13 +16,9 @@ namespace FrenBot.Services
         {
             _client = client;
             _services = services;
-        }
 
-        public async Task InitializeAsync()
-        {
             _client.JoinedGuild += OnJoinedGuildAsync;
             _client.LeftGuild += OnLeftGuildAsync;
-            await Task.CompletedTask;
         }
 
         private async Task OnJoinedGuildAsync(SocketGuild guild)

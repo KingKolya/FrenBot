@@ -39,7 +39,10 @@ namespace FrenBot
             IServiceScope serviceScope = host.Services.CreateScope();
             IServiceProvider serviceProvider = serviceScope.ServiceProvider;
 
-            var client = serviceProvider.GetRequiredService<DiscordSocketClient>();
+            serviceProvider.GetRequiredService<LoggingService>();
+            serviceProvider.GetRequiredService<InteractionHandler>();
+            serviceProvider.GetRequiredService<GuildConfigManager>();
+            serviceProvider.GetRequiredService<VoiceChatNotifier>();
 
             var manager = serviceProvider.GetRequiredService<GuildConfigManager>();
             await manager.InitializeAsync();

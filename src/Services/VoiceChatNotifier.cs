@@ -9,14 +9,11 @@ namespace FrenBot.Services
         public VoiceChatNotifier(DiscordSocketClient client)
         {
             _client = client;
-        }
 
-        public async Task InitializeAsync()
-        {
             _client.UserVoiceStateUpdated += OnUserVoiceStateUpdateAsync;
-
-            await Task.CompletedTask;
         }
+
+
 
         // TODO: implement a method to prevent the bot from ping spamming
 

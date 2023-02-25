@@ -15,11 +15,6 @@ namespace FrenBot.Services
             _client = client;
             _interactions = interactions;
             _services = services;
-        }
-
-        public async Task InitializeAsync()
-        {
-            await _interactions.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
             _client.InteractionCreated += HandleInteraction;
         }
