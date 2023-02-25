@@ -77,7 +77,7 @@ namespace FrenBot.Modules
                 if (guildConfigs.ContainsKey(guildID))
                 {
                     guildConfigs[guildID] = guildConfig;
-                    Console.WriteLine($"{DateTime.Now}: Updated config entry;");
+                    Console.WriteLine($"{DateTime.Now}: Updated guildConfig {guildID};");
                 }
                 else
                 {

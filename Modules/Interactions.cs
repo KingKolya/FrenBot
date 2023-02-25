@@ -10,8 +10,8 @@ namespace FrenBot.Modules
         public async Task HandlePingCommandAsync()
         {
             var latency = Context.Client.Latency;
-            await ReplyAsync($"Pong! {latency}ms");
             Console.WriteLine($"{DateTime.Now}: {Context.User.Username} pinged the bot with {latency}ms of latency in {Context.Guild.Name}");
+            await ReplyAsync($"Pong! {latency}ms");
         }
 
         [SlashCommand("subscribe", "receive notification when users join a voice channel")]
@@ -32,7 +32,6 @@ namespace FrenBot.Modules
             if (HasRole(guildConfig.NotifyRoleID))
             {
                 await RespondAsync($"you are already subscribed", ephemeral: true);
-                return;
             }
             else
             {
@@ -66,7 +65,6 @@ namespace FrenBot.Modules
             else
             {               
                 await RespondAsync("you are currently not subscribed.", ephemeral: true);
-                return;
             }
         }
 
