@@ -136,7 +136,7 @@ namespace FrenBot.Modules
             var guild = (Context.Channel as SocketGuildChannel)?.Guild;
             var user = Context.User as IGuildUser;
 
-            if (guild == null || user == null) return false;
+            if (guild == null || user == null) throw new NullReferenceException();
 
             return user.RoleIds.Any(id => guild.GetRole(id).Id == roleID);
         }
