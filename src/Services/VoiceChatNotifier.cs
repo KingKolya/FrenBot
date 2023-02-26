@@ -13,20 +13,16 @@ namespace FrenBot.Services
             _client.UserVoiceStateUpdated += OnUserVoiceStateUpdateAsync;
         }
 
-
-
         // TODO: implement a method to prevent the bot from ping spamming
-
         private async Task OnUserVoiceStateUpdateAsync(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
+            if (newState.VoiceChannel == null || oldState.VoiceChannel == newState.VoiceChannel) return;
 
-            if (oldState.VoiceChannel != newState.VoiceChannel)
-            {
                 var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
                 var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
 
-                if (voiceChannels.Any(channel => !user.IsBot && !afkChannel.Contains(newState.VoiceChannel) && channel.ConnectedUsers.Any()))
-                {
+            if (!voiceChannels.Any(channel => !user.IsBot && !afkChannel.Contains(newState.VoiceChannel) && channel.ConnectedUsers.Any())) return;
+
                     var guild = newState.VoiceChannel.Guild;
                     var vcName = newState.VoiceChannel.Name;
 
@@ -49,8 +45,7 @@ namespace FrenBot.Services
                     }
 
                     await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {user.Username} has joined {vcName}.");
-                }
-            }
+
         }
     }
 }
