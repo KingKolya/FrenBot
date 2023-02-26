@@ -30,7 +30,7 @@ namespace FrenBot.Services
                     var guild = newState.VoiceChannel.Guild;
                     var vcName = newState.VoiceChannel.Name;
 
-                    GuildConfig guildConfig = await GuildConfigManager.ReadGuildConfigAsync(guild.Id);
+            GuildConfig guildConfig = await GuildConfigManager.GetGuildConfigAsync(guild.Id);
 
                     if (guildConfig == null || !guildConfig.NotifyEnabled) return;
 

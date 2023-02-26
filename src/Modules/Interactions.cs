@@ -20,7 +20,7 @@ namespace FrenBot.Modules
             var user = Context.User as IGuildUser;
             if (user == null) return;
 
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
 
             var role = Context.Guild.GetRole(guildConfig.NotifyRoleID);
             if (role == null)
@@ -46,7 +46,7 @@ namespace FrenBot.Modules
             var user = Context.User as IGuildUser;
             if (user == null) return;
 
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
 
             var role = Context.Guild.GetRole(guildConfig.NotifyRoleID);
             if (role == null)
@@ -70,7 +70,7 @@ namespace FrenBot.Modules
         [SlashCommand("enable", "Enable notifications")]
         public async Task HandleEnableCommandAsync()
         {
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
 
             if (guildConfig.NotifyEnabled)
             {
@@ -80,7 +80,7 @@ namespace FrenBot.Modules
             {
                 guildConfig.NotifyEnabled = true;
 
-                await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+                await GuildConfigManager.AddGuildConfigAsync(Context.Guild.Id, guildConfig);
                 await RespondAsync("Notifications are now enabled.");
             }
 
@@ -90,13 +90,13 @@ namespace FrenBot.Modules
         [SlashCommand("disable", "Disable notifications")]
         public async Task HandleDisableCommandAsync()
         {
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
 
             if (guildConfig.NotifyEnabled)
             {
                 guildConfig.NotifyEnabled = false;
 
-                await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+                await GuildConfigManager.AddGuildConfigAsync(Context.Guild.Id, guildConfig);
                 await RespondAsync("Notifications are now disabled.");
             }
             else
@@ -111,10 +111,10 @@ namespace FrenBot.Modules
         {
             ulong roleID = role.Id;
 
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
             guildConfig.NotifyRoleID = roleID;
 
-            await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+            await GuildConfigManager.AddGuildConfigAsync(Context.Guild.Id, guildConfig);
             await RespondAsync($"{role.Name} will be notified");
         }
 
@@ -124,10 +124,10 @@ namespace FrenBot.Modules
         {
             ulong channelID = channel.Id;
 
-            var guildConfig = await GuildConfigManager.ReadGuildConfigAsync(Context.Guild.Id);
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
             guildConfig.NotifyChannelID = channelID;
 
-            await GuildConfigManager.WriteGuildConfigAsync(Context.Guild.Id, guildConfig);
+            await GuildConfigManager.AddGuildConfigAsync(Context.Guild.Id, guildConfig);
             await RespondAsync($"notifications will be sent to {channel.Name}");
         }
 
