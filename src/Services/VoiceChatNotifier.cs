@@ -33,17 +33,18 @@ namespace FrenBot.Services
                     var notifyChannel = guild.GetTextChannel(guildConfig.NotifyChannelID);
                     if (notifyChannel == null)
                     {
-                        Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss}: notification channel not found in {guild.Name}");
+                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification channel not found in {guild.Name}");
                         return;
                     }
 
                     var notifyRole = guild.GetRole(guildConfig.NotifyRoleID);
                     if (notifyRole == null)
                     {
-                        Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss}: notification role not found in {guild.Name}");
+                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification role not found in {guild.Name}");
                         return;
                     }
 
+            Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [notification] FrenBot: {user.Username} joined {vcName} in {guild.Name}");
                     await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {user.Username} has joined {vcName}.");
 
         }

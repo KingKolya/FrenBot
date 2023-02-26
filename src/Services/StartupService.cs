@@ -39,18 +39,14 @@ namespace FrenBot.Services
 
         private async Task OnReadyAsync()
         {
-            Console.WriteLine("Hello, World!");
-
-            // gather guildids
             var guilds = _client.Guilds;
 
-            // register commands to servers
             foreach (var guild in guilds)
             {
                 ulong guildID = guild.Id;
 
                 await _interactions.RegisterCommandsToGuildAsync(guildID);
-                Console.WriteLine($"registered commands to guildID: {guildID}");
+                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Info] FrenBot: registered commands to guildID: {guildID}");
             }
         }
     }
