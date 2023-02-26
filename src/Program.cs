@@ -26,7 +26,10 @@ namespace FrenBot
                 {
                     LogLevel = LogSeverity.Verbose,
                     MessageCacheSize = 1024,
-                    GatewayIntents = GatewayIntents.All 
+                    GatewayIntents = GatewayIntents.Guilds
+                    | GatewayIntents.GuildMembers
+                    | GatewayIntents.GuildMessages
+                    | GatewayIntents.GuildVoiceStates
                 }))
                 .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>(), new InteractionServiceConfig
                 {
