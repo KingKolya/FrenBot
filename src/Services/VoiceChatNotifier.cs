@@ -18,34 +18,34 @@ namespace FrenBot.Services
         {
             if (newState.VoiceChannel == null || oldState.VoiceChannel == newState.VoiceChannel) return;
 
-                var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
-                var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
+            var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
+            var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
 
             if (!voiceChannels.Any(channel => !user.IsBot && !afkChannel.Contains(newState.VoiceChannel) && channel.ConnectedUsers.Any())) return;
 
-                    var guild = newState.VoiceChannel.Guild;
-                    var vcName = newState.VoiceChannel.Name;
+            var guild = newState.VoiceChannel.Guild;
+            var vcName = newState.VoiceChannel.Name;
 
             GuildConfig guildConfig = await GuildConfigManager.GetGuildConfigAsync(guild.Id);
 
-                    if (guildConfig == null || !guildConfig.NotifyEnabled) return;
+            if (guildConfig == null || !guildConfig.NotifyEnabled) return;
 
-                    var notifyChannel = guild.GetTextChannel(guildConfig.NotifyChannelID);
-                    if (notifyChannel == null)
-                    {
+            var notifyChannel = guild.GetTextChannel(guildConfig.NotifyChannelID);
+            if (notifyChannel == null)
+            {
                 Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification channel not found in {guild.Name}");
-                        return;
-                    }
+                return;
+            }
 
-                    var notifyRole = guild.GetRole(guildConfig.NotifyRoleID);
-                    if (notifyRole == null)
-                    {
+            var notifyRole = guild.GetRole(guildConfig.NotifyRoleID);
+            if (notifyRole == null)
+            {
                 Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification role not found in {guild.Name}");
-                        return;
-                    }
+                return;
+            }
 
             Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [notification] FrenBot: {user.Username} joined {vcName} in {guild.Name}");
-                    await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {user.Username} has joined {vcName}.");
+            await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {user.Username} has joined {vcName}.");
 
         }
     }

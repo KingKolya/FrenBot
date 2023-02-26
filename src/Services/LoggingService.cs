@@ -9,12 +9,12 @@ namespace FrenBot.Services
         private readonly DiscordSocketClient _client;
         private readonly InteractionService _interactions;
 
-        private string _logDirectory { get; }
-        private string _logFile => Path.Combine(_logDirectory, $"{DateTime.UtcNow:yyyy-MM-dd}.txt");
+        private string LogDirectory { get; }
+        private string LogFile => Path.Combine(LogDirectory, $"{DateTime.UtcNow:yyyy-MM-dd}.txt");
 
         public LoggingService(DiscordSocketClient client, InteractionService interactions)
         {
-            _logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+            LogDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
 
             _client = client;
             _interactions = interactions;
@@ -25,13 +25,13 @@ namespace FrenBot.Services
 
         private Task OnLogAsync(LogMessage msg)
         {
-            if (!Directory.Exists(_logDirectory))
-                Directory.CreateDirectory(_logDirectory);
-            if (!File.Exists(_logFile))
-                File.Create(_logFile).Dispose();
+            if (!Directory.Exists(LogDirectory))
+                Directory.CreateDirectory(LogDirectory);
+            if (!File.Exists(LogFile))
+                File.Create(LogFile).Dispose();
 
             string logText = $"{DateTime.UtcNow:hh:mm:ss} [{msg.Severity}] {msg.Source}: {msg.Exception?.ToString() ?? msg.Message}";
-            File.AppendAllText(_logFile, logText + "\n");
+            File.AppendAllText(LogFile, logText + "\n");
 
             return Console.Out.WriteLineAsync(logText);
         }
