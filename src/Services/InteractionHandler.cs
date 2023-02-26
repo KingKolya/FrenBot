@@ -16,20 +16,18 @@ namespace FrenBot.Services
             _interactions = interactions;
             _services = services;
 
-            _client.InteractionCreated += HandleInteraction;
+            _client.InteractionCreated += OnInteractionCreated;
         }
 
-        private async Task HandleInteraction(SocketInteraction arg)
+        private async Task OnInteractionCreated(SocketInteraction arg)
         {
-            try
-            {
-                var context = new SocketInteractionContext(_client, arg);
-                await _interactions.ExecuteCommandAsync(context, _services);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            if (arg.User.IsBot || arg.User.Id == _client.CurrentUser.Id) return;
+
+            var context = new SocketInteractionContext(_client, arg);
+            var result = await _interactions.ExecuteCommandAsync(context, _services);
+
+            if (!result.IsSuccess)
+                await context.Channel.SendMessageAsync(result.ToString());
         }
     }
 }
