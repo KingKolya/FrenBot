@@ -27,7 +27,7 @@ namespace FrenBot.Services
 
         public async Task StartUpAsync()
         {
-            var token = _config.GetSection("appConfig")["token"];
+            var token = _config.GetSection("discord")["token"];
             if (string.IsNullOrWhiteSpace(token))
                 throw new Exception("Please enter the bot's token into the 'config.json' file in the app's root directory.");
 
