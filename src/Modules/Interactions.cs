@@ -11,7 +11,7 @@ namespace FrenBot.Modules
         public async Task HandlePingCommandAsync()
         {
             var latency = Context.Client.Latency;
-            await ReplyAsync($"Pong! {latency}ms");
+            await RespondAsync($"Pong! {latency}ms");
         }
 
         // TODO: make sure role is below bot in role hierarchy
@@ -19,25 +19,17 @@ namespace FrenBot.Modules
         [SlashCommand("subscribe", "receive notification when users join a voice channel")]
         public async Task HandleSubscribeCommandAsync()
         {
-            var user = Context.User as IGuildUser;
-            if (user == null) return;
-
             var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
+            var roleId = guildConfig.NotifyRoleID;
+            var user = Context.Guild.GetUser(Context.User.Id);
 
-            var role = Context.Guild.GetRole(guildConfig.NotifyRoleID);
-            if (role == null)
-            {
-                await ReplyAsync($"Role not found.");
-                return;
-            }
-
-            if (HasRole(guildConfig.NotifyRoleID))
+            if (HasRole(user, roleId))
             {
                 await RespondAsync($"you are already subscribed", ephemeral: true);
             }
             else
             {
-                await user.AddRoleAsync(role);
+                await user.AddRoleAsync(roleId);
                 await RespondAsync("you will now receive notifications when users join a voice channel.", ephemeral: true);
             }
         }
@@ -45,22 +37,14 @@ namespace FrenBot.Modules
         [SlashCommand("unsubscribe", "stop receiving notifications when users join a voice channel")]
         public async Task HandleUnsubscribeCommandAsync()
         {
-            var user = Context.User as IGuildUser;
-            if (user == null) return;
-
             var guildConfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
+            var roleId = guildConfig.NotifyRoleID;
+            var user = Context.Guild.GetUser(Context.User.Id);
 
-            var role = Context.Guild.GetRole(guildConfig.NotifyRoleID);
-            if (role == null)
-            {
-                await ReplyAsync($"Role not found.");
-                return;
-            }
-
-            if (HasRole(guildConfig.NotifyRoleID))
+            if (HasRole(user, roleId))
             {
                 await RespondAsync("you will no longer receive notifications when users join a voice channel.", ephemeral: true);
-                await user.RemoveRoleAsync(role);
+                 await user.RemoveRoleAsync(roleId);
             }
             else
             {               
@@ -133,14 +117,10 @@ namespace FrenBot.Modules
             await RespondAsync($"notifications will be sent to {channel.Name}");
         }
 
-        bool HasRole(ulong roleID)
+        bool HasRole(SocketGuildUser user, ulong roleId)
         {
-            var guild = (Context.Channel as SocketGuildChannel)?.Guild;
-            var user = Context.User as IGuildUser;
-
-            if (guild == null || user == null) throw new NullReferenceException();
-
-            return user.RoleIds.Any(id => guild.GetRole(id).Id == roleID);
+            var role = Context.Guild.GetRole(roleId) ?? throw new Exception("role not found");
+            return user.Roles.Contains(role);
         }
     }
 }
