@@ -98,8 +98,6 @@ namespace FrenBot.Services
 
         private static async Task WriteGuildConfigsAsync(Dictionary<ulong, GuildConfig> guildConfigs)
         {
-            if (!File.Exists(FileName)) throw new Exception($"{FileName} not found");
-
             FileStream createStream = File.Create(FileName);
             await JsonSerializer.SerializeAsync(createStream, guildConfigs);
             await createStream.DisposeAsync();
