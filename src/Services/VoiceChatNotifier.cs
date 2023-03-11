@@ -45,7 +45,7 @@ namespace FrenBot.Services
             }
 
             Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [notification] FrenBot: {user.Username} joined {vcName} in {guild.Name}");
-            await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {user.Username} has joined {vcName}.");
+            await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {guild.GetUser(user.Id).DisplayName} has joined {vcName}.");
 
         }
     }
