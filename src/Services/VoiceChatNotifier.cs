@@ -13,7 +13,8 @@ namespace FrenBot.Services
             _client.UserVoiceStateUpdated += OnUserVoiceStateUpdateAsync;
         }
 
-        // TODO: implement a method to prevent the bot from ping spamming
+        // TODO: Add notification cooldown per user
+        // TODO: check for optimizations of voicechannels, afkChannel, and if user joined statement.
         private async Task OnUserVoiceStateUpdateAsync(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
             if (newState.VoiceChannel == null || oldState.VoiceChannel == newState.VoiceChannel) return;

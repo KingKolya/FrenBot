@@ -14,6 +14,8 @@ namespace FrenBot.Modules
             await ReplyAsync($"Pong! {latency}ms");
         }
 
+        // TODO: make sure role is below bot in role hierarchy
+        // TODO: make sure user has role
         [SlashCommand("subscribe", "receive notification when users join a voice channel")]
         public async Task HandleSubscribeCommandAsync()
         {

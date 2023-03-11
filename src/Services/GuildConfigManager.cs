@@ -42,6 +42,7 @@ namespace FrenBot.Services
             return guildConfigs[guildId];
         }
 
+        // TODO: append file instead of rewriting it
         public static async Task AddGuildConfigAsync(ulong guildId, GuildConfig guildConfig)
         {
             Dictionary<ulong, GuildConfig> _guildConfigs;
