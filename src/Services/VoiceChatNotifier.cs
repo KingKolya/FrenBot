@@ -10,44 +10,40 @@ namespace FrenBot.Services
         {
             _client = client;
 
-            _client.UserVoiceStateUpdated += OnUserVoiceStateUpdateAsync;
+            _client.UserVoiceStateUpdated += OnUserVoiceStateUpdateAsync;           
         }
 
         // TODO: Add notification cooldown per user
-        // TODO: check for optimizations of voicechannels, afkChannel, and if user joined statement.
         private async Task OnUserVoiceStateUpdateAsync(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
-            if (newState.VoiceChannel == null || oldState.VoiceChannel == newState.VoiceChannel) return;
+            var voiceChannel = newState.VoiceChannel;
+            if (voiceChannel == oldState.VoiceChannel || voiceChannel == null || !voiceChannel.ConnectedUsers.Any() || user.IsBot) return;
 
-            var voiceChannels = _client.Guilds.SelectMany(guild => guild.VoiceChannels);
-            var afkChannel = _client.Guilds.Select(guild => guild.AFKChannel).Where(channel => channel != null);
+            var guild = voiceChannel.Guild;
+            if (voiceChannel == guild.AFKChannel) return;
 
-            if (!voiceChannels.Any(channel => !user.IsBot && !afkChannel.Contains(newState.VoiceChannel) && channel.ConnectedUsers.Any())) return;
-
-            var guild = newState.VoiceChannel.Guild;
-            var vcName = newState.VoiceChannel.Name;
-
-            GuildConfig guildConfig = await GuildConfigManager.GetGuildConfigAsync(guild.Id);
-
+            var guildConfig = await GuildConfigManager.GetGuildConfigAsync(guild.Id);
             if (guildConfig == null || !guildConfig.NotifyEnabled) return;
+
+            var guildName = guild.Name;
+            var vcName = voiceChannel.Name;
 
             var notifyChannel = guild.GetTextChannel(guildConfig.NotifyChannelID);
             if (notifyChannel == null)
             {
-                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification channel not found in {guild.Name}");
+                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification channel not found in {guildName}");
                 return;
             }
 
             var notifyRole = guild.GetRole(guildConfig.NotifyRoleID);
             if (notifyRole == null)
             {
-                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification role not found in {guild.Name}");
+                Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [Warning] FrenBot: notification role not found in {guildName}");
                 return;
             }
 
-            Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [notification] FrenBot: {user.Username} joined {vcName} in {guild.Name}");
+            Console.WriteLine($"{DateTime.UtcNow:hh:mm:ss} [notification] FrenBot: {user.Username} joined {vcName} in {guildName}");
             await notifyChannel.SendMessageAsync($"{notifyRole.Mention} {guild.GetUser(user.Id).DisplayName} has joined {vcName}.");
-
         }
     }
 }
