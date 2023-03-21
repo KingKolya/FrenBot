@@ -6,5 +6,6 @@
 
         public ulong NotifyChannelID { get; set; }
         public ulong NotifyRoleID { get; set; }
+        public int CooldownTime { get; set; }
     }
 }

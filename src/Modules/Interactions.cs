@@ -117,6 +117,17 @@ namespace FrenBot.Modules
             await RespondAsync($"notifications will be sent to {channel.Name}");
         }
 
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        [SlashCommand("setcooldown", "set time between notification per user in minutes")]
+        public async Task HandleSetCooldownAsync(int minutes)
+        {
+            var guildconfig = await GuildConfigManager.GetGuildConfigAsync(Context.Guild.Id);
+            guildconfig.CooldownTime = minutes;
+            
+            await GuildConfigManager.AddGuildConfigAsync(Context.Guild.Id , guildconfig);
+            await RespondAsync($"there is now a {minutes} minute cooldown on notifications per user");
+        }
+
         bool HasRole(SocketGuildUser user, ulong roleId)
         {
             var role = Context.Guild.GetRole(roleId) ?? throw new Exception("role not found");
