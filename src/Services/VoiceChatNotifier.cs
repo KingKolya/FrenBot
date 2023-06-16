@@ -13,7 +13,6 @@ namespace FrenBot.Services
             _client.UserVoiceStateUpdated += OnUserVoiceStateUpdateAsync;           
         }
 
-        // TODO: Add notification cooldown per user
         private async Task OnUserVoiceStateUpdateAsync(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
             var voiceChannel = newState.VoiceChannel;
